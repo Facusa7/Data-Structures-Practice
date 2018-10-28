@@ -9,10 +9,9 @@ namespace DataStructures1
     {
         public static void Main(string[] args)
         {
-            var extraLeaf = new Node(10);
             var nodeLeaf7 = new Node(7);
             var nodeLeaf9 = new Node(9);
-            var nodeLeaf11 = new Node(11, extraLeaf);
+            var nodeLeaf11 = new Node(11);
             var nodeLeaf15 = new Node(15);
 
             var node8 = new Node(8, nodeLeaf7, nodeLeaf9);
@@ -24,8 +23,8 @@ namespace DataStructures1
             //root.PrintPreOder();
             //root.PrintPostOrder();
 
-            var closest = root.ClosestLeafNode(root, node12);
-            Console.WriteLine($"The closest leaf node to {node12.Data} is {closest.Data}");
+            var maximumWidth = root.MaximumWidth(root);
+            Console.WriteLine($"The vertical sum is: {maximumWidth}");
             //var graphNode = new Graph.Node(2);
             //var secondNode = new Graph.Node(3);
             //var thirdNode = new Graph.Node(4);
@@ -85,6 +84,7 @@ namespace DataStructures1
         public int Data { get; set; }
         public Node Left { get; set; }
         public Node Right { get; set; }
+        public List<Node> Adjacents { get; set; }
 
         public Node(int value, Node left = null, Node right = null)
         {
@@ -236,6 +236,101 @@ namespace DataStructures1
             if (node.Right != null) {
                 BuildAdjList(ref mapping, node.Right, node);
             }
+        }
+
+        public int VerticalSum(Node node)
+        {
+            if (node == null)
+            {
+                return 0;
+            }
+
+            if (node.Left != null && node.Right != null)
+            {
+                return node.Data + VerticalSum(node.Left.Right) + VerticalSum(node.Right.Left);
+            }
+            else
+            {
+                return node.Data;
+            }
+        }
+
+        public Dictionary<int, int> VerticalSum(Node node, int level, Dictionary<int, int> verticalSum)
+        {
+            if (verticalSum == null)
+            {
+                verticalSum = new Dictionary<int, int>();
+                level = 0;
+                verticalSum.Add(level, node.Data);
+            }
+
+            if (node.Left != null)
+            {
+                level -= 1;
+                if (!verticalSum.ContainsKey(level))
+                {
+                    verticalSum.Add(level, node.Left.Data);
+                }
+                else
+                {
+                    verticalSum[level] += node.Left.Data;
+                }
+
+                VerticalSum(node.Left, level, verticalSum);
+            }
+            
+            if (node.Right != null)
+            {
+                level += 2;
+                if (!verticalSum.ContainsKey(level))
+                {
+                    verticalSum.Add(level, node.Right.Data);
+                }
+                else
+                {
+                    verticalSum[level] += node.Right.Data;
+                }
+                VerticalSum(node.Right, level, verticalSum);
+            }
+
+            return verticalSum;
+        }
+
+        public int MaximumWidth(Node node)
+        {
+            if (node == null)
+            {
+                return 0;
+            }
+
+            var queue = new Queue<Node>();
+            queue.Enqueue(node);
+            var maxCount = queue.Count();
+            var currentCount = 1;
+
+            while (queue.Count > 0)
+            {
+                for (int i = 0; i < currentCount; i++)
+                {
+                    var currentNode = queue.Dequeue();
+                    if (currentNode.Left != null)
+                    {
+                        queue.Enqueue(currentNode.Left);
+                    }
+                    if (currentNode.Right != null)
+                    {
+                        queue.Enqueue(currentNode.Right);
+                    }
+                }
+
+                currentCount = queue.Count;
+                if (currentCount > maxCount)
+                {
+                    maxCount = currentCount;
+                }
+            }
+
+            return maxCount;
         }
     }
 
