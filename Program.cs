@@ -9,22 +9,20 @@ namespace DataStructures1
     {
         public static void Main(string[] args)
         {
-            var nodeLeaf7 = new Node(7);
-            var nodeLeaf9 = new Node(9);
-            var nodeLeaf11 = new Node(11);
-            var nodeLeaf15 = new Node(15);
+            //var nodeLeaf7 = new Node(7);
+            //var nodeLeaf9 = new Node(9);
+            //var nodeLeaf11 = new Node(11);
+            //var nodeLeaf15 = new Node(15);
 
-            var node8 = new Node(8, nodeLeaf7, nodeLeaf9);
-            var node12 = new Node(12, nodeLeaf11, nodeLeaf15);
+            //var node8 = new Node(8, nodeLeaf7, nodeLeaf9);
+            //var node12 = new Node(12, nodeLeaf11, nodeLeaf15);
             
-            var root = new Node(10, node8, node12);
+            //var root = new Node(10, node8, node12);
 
-            root.PrintInOrder();
+            //root.PrintInOrder();
             //root.PrintPreOder();
             //root.PrintPostOrder();
 
-            var maximumWidth = root.MaximumWidth(root);
-            Console.WriteLine($"The vertical sum is: {maximumWidth}");
             //var graphNode = new Graph.Node(2);
             //var secondNode = new Graph.Node(3);
             //var thirdNode = new Graph.Node(4);
@@ -74,6 +72,13 @@ namespace DataStructures1
             //    Console.WriteLine($"Couldn't find destination");
             //}
 
+            var test = new MinimumStack();
+            test.Push(5);
+            test.Push(4);
+            test.Push(3);
+            test.Push(7);
+            test.Push(1);
+            Console.WriteLine($"the mininum value is: {test.Min()}");
             Console.ReadKey();
 
         }
@@ -430,4 +435,31 @@ namespace DataStructures1
         }
     }
 
+    public class MinimumStack : Stack<int>
+    {
+        private readonly Stack<int> _stack2;
+        public MinimumStack()
+        { 
+           _stack2 = new Stack<int>(); 
+        }
+
+        public new void Push(int value){
+            if (value <= Min()) {
+               _stack2.Push(value);
+            }
+            base.Push(value);
+        }
+
+        public new int Pop() {
+           var value = base.Pop();
+           if (value == Min()) {
+              _stack2.Pop();
+           }
+           return value;
+        }
+        public int Min()
+        {
+           return _stack2.Count == 0 ? int.MaxValue : _stack2.Peek();
+        }
+    }
 }
