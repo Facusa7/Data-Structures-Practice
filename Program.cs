@@ -72,13 +72,20 @@ namespace DataStructures1
             //    Console.WriteLine($"Couldn't find destination");
             //}
 
-            var test = new MinimumStack();
-            test.Push(5);
-            test.Push(4);
-            test.Push(3);
-            test.Push(7);
-            test.Push(1);
-            Console.WriteLine($"the mininum value is: {test.Min()}");
+            //var test = new MinimumStack();
+            //test.Push(5);
+            //test.Push(4);
+            //test.Push(3);
+            //test.Push(7);
+            //test.Push(1);
+            //Console.WriteLine($"the mininum value is: {test.Min()}");
+
+            var minHeap = new MinHeap();
+            minHeap.Add(10);minHeap.Add(8);
+            minHeap.Add(12); minHeap.Add(7);
+            minHeap.Add(9); minHeap.Add(11);
+            minHeap.Add(15);
+            Console.WriteLine($"the mininum value is: {minHeap.Peek()}");
             Console.ReadKey();
 
         }
@@ -468,7 +475,7 @@ namespace DataStructures1
         private static int Capacity { get; set; } = 10;
         private int Size = 0;
 
-        public int[] items = new int[Capacity];
+        public int[] Items = new int[Capacity];
 
         private int GetLeftChildIndex(int parentIndex)
         {
@@ -497,22 +504,95 @@ namespace DataStructures1
 
         private bool HasParent(int index)
         {
-            return GetParentIndex(index) >= Size;
+            return GetParentIndex(index) >= 0;
         }
 
         private int LeftChild(int index)
         {
-            return items[GetLeftChildIndex(index)];
+            return Items[GetLeftChildIndex(index)];
         }
 
         private int RightChild(int index)
         {
-            return items[GetRightChildIndex(index)];
+            return Items[GetRightChildIndex(index)];
         }
 
         private int Parent(int index)
         {
-            return items[GetParentIndex(index)];
+            return Items[GetParentIndex(index)];
+        }
+
+        public int Peek()
+        {
+            if (Size == 0) { throw new Exception("Heap is empty"); }
+
+            return Items[0];
+        }
+
+        public int Poll()
+        {
+            if (Size == 0) { throw new Exception("Heap is empty"); }
+
+            var item = Items[0];
+            Items[0] = Items[Size - 1];
+            Size--;
+            HeapifyDown();
+            return item;
+        }
+
+        public void Add(int item)
+        {
+            EnsureExtraCapacity();
+            Items[Size] = item;
+            Size++;
+            HeapifyUp();
+        }
+
+        private void EnsureExtraCapacity()
+        {
+            if (Size != Capacity) return;
+            Array.Copy(Items, Items, Capacity * 2);
+            Capacity *= 2;
+        }
+
+        private void HeapifyUp()
+        {
+            var index = Size - 1;
+            while (HasParent(index) && Parent(index) > Items[index])
+            {
+               Swap(GetParentIndex(index), index);
+               index = GetParentIndex(index);
+            }
+        }
+
+        private void Swap(int index1, int index2)
+        {
+            var temp = Items[index1];
+            Items[index1] = Items[index2];
+            Items[index2] = temp;
+        }
+
+        private void HeapifyDown()
+        {
+            var index = 0;
+            while (HasLeftChild(index))
+            {
+                var smallerChildIndex = GetLeftChildIndex(index);
+                if (HasRightChild(index) && RightChild(index) < LeftChild(index))
+                {
+                    smallerChildIndex = GetRightChildIndex(index);
+                }
+
+                if (Items[index] < Items[smallerChildIndex])
+                {
+                    break;
+                }
+                else
+                {
+                    Swap(index, smallerChildIndex);
+                }
+                index = smallerChildIndex;
+            }
         }
     }
 }
