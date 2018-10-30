@@ -462,4 +462,57 @@ namespace DataStructures1
            return _stack2.Count == 0 ? int.MaxValue : _stack2.Peek();
         }
     }
+
+    public class MinHeap
+    {
+        private static int Capacity { get; set; } = 10;
+        private int Size = 0;
+
+        public int[] items = new int[Capacity];
+
+        private int GetLeftChildIndex(int parentIndex)
+        {
+            return 2 * parentIndex + 1;
+        }
+
+        private int GetRightChildIndex(int parentIndex)
+        {
+            return 2 * parentIndex + 2;
+        }
+
+        private int GetParentIndex(int childIndex)
+        {
+            return (childIndex - 1) / 2;
+        }
+
+        private bool HasLeftChild(int index)
+        {
+            return GetLeftChildIndex(index) < Size;
+        }
+
+        private bool HasRightChild(int index)
+        {
+            return GetRightChildIndex(index) < Size;
+        }
+
+        private bool HasParent(int index)
+        {
+            return GetParentIndex(index) >= Size;
+        }
+
+        private int LeftChild(int index)
+        {
+            return items[GetLeftChildIndex(index)];
+        }
+
+        private int RightChild(int index)
+        {
+            return items[GetRightChildIndex(index)];
+        }
+
+        private int Parent(int index)
+        {
+            return items[GetParentIndex(index)];
+        }
+    }
 }
