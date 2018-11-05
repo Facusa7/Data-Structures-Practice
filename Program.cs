@@ -9,20 +9,20 @@ namespace DataStructures1
     {
         public static void Main(string[] args)
         {
-            //var nodeLeaf7 = new Node(7);
-            //var nodeLeaf9 = new Node(9);
-            //var nodeLeaf11 = new Node(11);
-            //var nodeLeaf15 = new Node(15);
+            var nodeLeaf7 = new Node(7);
+            var nodeLeaf9 = new Node(9);
+            var nodeLeaf11 = new Node(11);
+            var nodeLeaf15 = new Node(15);
 
-            //var node8 = new Node(8, nodeLeaf7, nodeLeaf9);
-            //var node12 = new Node(12, nodeLeaf11, nodeLeaf15);
-            
-            //var root = new Node(10, node8, node12);
+            var node8 = new Node(8, nodeLeaf7, nodeLeaf9);
+            var node12 = new Node(12, nodeLeaf11, nodeLeaf15);
+
+            var root = new Node(10, node8, node12);
 
             //root.PrintInOrder();
             //root.PrintPreOder();
             //root.PrintPostOrder();
-
+            var distance = Node.DistanceBetweenNodes.FindDistance(root, 7, 8);
             //var graphNode = new Graph.Node(2);
             //var secondNode = new Graph.Node(3);
             //var thirdNode = new Graph.Node(4);
@@ -80,12 +80,12 @@ namespace DataStructures1
             //test.Push(1);
             //Console.WriteLine($"the mininum value is: {test.Min()}");
 
-            var minHeap = new MinHeap();
-            minHeap.Add(10);minHeap.Add(8);
-            minHeap.Add(12); minHeap.Add(7);
-            minHeap.Add(9); minHeap.Add(11);
-            minHeap.Add(15);
-            Console.WriteLine($"the mininum value is: {minHeap.Peek()}");
+            //var minHeap = new MinHeap();
+            //minHeap.Add(10);minHeap.Add(8);
+            //minHeap.Add(12); minHeap.Add(7);
+            //minHeap.Add(9); minHeap.Add(11);
+            //minHeap.Add(15);
+            //Console.WriteLine($"the mininum value is: {minHeap.Peek()} {18%10}");
             Console.ReadKey();
 
         }
@@ -344,6 +344,106 @@ namespace DataStructures1
 
             return maxCount;
         }
+
+        public static class DistanceBetweenNodes
+        {
+            // Returns level of key k if it is present in tree, 
+            // otherwise returns -1 
+            public static int FindLevel(Node root, int k, int level) 
+            { 
+                // Base Case 
+                if (root == null) 
+                    return -1; 
+          
+                // If key is present at root, or in left subtree or right subtree, 
+                // return true; 
+                if (root.Data == k) 
+                    return level; 
+              
+                var l = FindLevel(root.Left, k, level + 1); 
+                return (l != -1)? l : FindLevel(root.Right, k, level + 1); 
+            } 
+
+            // Global static variable 
+            static int d1 = -1; 
+            static int d2 = -1; 
+            static int dist = 0; 
+            // This function returns pointer to LCA of two given values n1 and n2.  
+            // It also sets d1, d2 and dist if one key is not ancestor of other 
+            // d1 --> To store distance of n1 from root 
+            // d2 --> To store distance of n2 from root 
+            // lvl --> Level (or distance from root) of current node 
+            // dist --> To store distance between n1 and n2 
+             public static Node FindDistUtil(Node root, int n1, int n2, int lvl)
+             { 
+                // Base case 
+                if (root == null) 
+                    return null; 
+          
+                // If either n1 or n2 matches with root's key, report 
+                // the presence by returning root (Note that if a key is 
+                // ancestor of other, then the ancestor key becomes LCA 
+                if (root.Data == n1){ 
+                    d1 = lvl; 
+                    return root; 
+                } 
+                if (root.Data == n2) 
+                { 
+                    d2 = lvl; 
+                    return root; 
+                } 
+          
+                // Look for n1 and n2 in left and right subtrees 
+                var leftLca = FindDistUtil(root.Left, n1, n2,  lvl + 1); 
+                var rightLca = FindDistUtil(root.Right, n1, n2,  lvl + 1); 
+          
+                // If both of the above calls return Non-NULL, then one key 
+                // is present in once subtree and other is present in other, 
+                // So this node is the LCA 
+                if (leftLca != null && rightLca != null) 
+                { 
+                    dist = (d1 + d2) - 2*lvl; 
+                    return root; 
+                } 
+          
+                // Otherwise check if left subtree or right subtree is LCA 
+                return (leftLca != null)? leftLca : rightLca;     
+            } 
+      
+             // The main function that returns distance between n1 and n2 
+             // This function returns -1 if either n1 or n2 is not present in 
+             // Binary Tree. 
+            public static int FindDistance(Node root, int n1, int n2)
+            { 
+                d1 = -1; 
+                d2 = -1; 
+                dist = 0; 
+                var lca = FindDistUtil(root, n1, n2, 1); 
+          
+                // If both n1 and n2 were present in Binary Tree, return dist 
+                if (d1 != -1 && d2 != -1) 
+                    return dist; 
+          
+                // If n1 is ancestor of n2, consider n1 as root and find level  
+                // of n2 in subtree rooted with n1 
+                if (d1 != -1) 
+                { 
+                    dist = FindLevel(lca, n2, 0); 
+                    return dist; 
+                } 
+          
+                // If n2 is ancestor of n1, consider n2 as root and find level  
+                // of n1 in subtree rooted with n2 
+                if (d2 != -1) 
+                { 
+                    dist = FindLevel(lca, n1, 0); 
+                    return dist; 
+                } 
+          
+                return -1; 
+            } 
+        }
+        
     }
 
     public class Graph
