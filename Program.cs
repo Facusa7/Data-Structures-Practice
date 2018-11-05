@@ -22,7 +22,7 @@ namespace DataStructures1
             //root.PrintInOrder();
             //root.PrintPreOder();
             //root.PrintPostOrder();
-            var distance = Node.DistanceBetweenNodes.FindDistance(root, 7, 8);
+            var maxValue = Node.MaxDifferenceBetweenNodes.MaxDiff(root);
             //var graphNode = new Graph.Node(2);
             //var secondNode = new Graph.Node(3);
             //var thirdNode = new Graph.Node(4);
@@ -443,7 +443,48 @@ namespace DataStructures1
                 return -1; 
             } 
         }
-        
+
+        public static class MaxDifferenceBetweenNodes
+        {
+            public static int MaxDiffUtil(Node t, Res res)  
+            { 
+                /* Returning Maximum int value if node is not 
+                   there (one child case)  */
+                if (t == null) 
+                    return int.MaxValue; 
+           
+                /* If leaf node then just return node's value  */
+                if (t.Left == null && t.Right == null) 
+                    return t.Data; 
+   
+                /* Recursively calling left and right subtree 
+                   for minimum value  */
+                var val = Math.Min(MaxDiffUtil(t.Left, res), 
+                    MaxDiffUtil(t.Right, res)); 
+   
+                /* Updating res if (node value - minimum value 
+                   from subtree) is bigger than res  */
+                res.R = Math.Max(res.R, t.Data - val); 
+   
+                /* Returning minimum value got so far */
+                return Math.Min(val, t.Data); 
+            } 
+   
+            /* This function mainly calls maxDiffUtil() */
+            public static int MaxDiff(Node root)  
+            { 
+                // Initialising result with minimum int value 
+                var res = new Res(); 
+                MaxDiffUtil(root, res); 
+   
+                return res.R; 
+            }
+
+            public class Res
+            {
+                public int R { get; set; }
+            }
+        }
     }
 
     public class Graph
