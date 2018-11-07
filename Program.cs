@@ -19,10 +19,13 @@ namespace DataStructures1
 
             var root = new Node(10, node8, node12);
 
+            BinaryTree.Nodes = new List<Node> {root, node8, node12, nodeLeaf15, nodeLeaf11, nodeLeaf9, nodeLeaf7};
+
+            var isBst = BinaryTree.IsBst();
             //root.PrintInOrder();
             //root.PrintPreOder();
             //root.PrintPostOrder();
-            var maxValue = Node.MaxDifferenceBetweenNodes.MaxDiff(root);
+            //var maxValue = Node.MaxDifferenceBetweenNodes.MaxDiff(root);
             //var graphNode = new Graph.Node(2);
             //var secondNode = new Graph.Node(3);
             //var thirdNode = new Graph.Node(4);
@@ -484,6 +487,48 @@ namespace DataStructures1
             {
                 public int R { get; set; }
             }
+        }
+    }
+
+    public static class BinaryTree
+    {
+        public static List<Node> Nodes { get; set; }
+
+        public static bool IsBst()
+        {
+            var root = Nodes.FirstOrDefault();
+            if (root == null || Nodes.Count <= 1)
+            {
+                return false;
+            }
+
+            return IsBstUtil(root, null);
+        }
+
+        private static bool IsBstUtil(Node node, Node parent)
+        {
+            var isLeftBST = false;
+            var isRightBST = false;
+
+            if (node.Left == null && node.Right == null)
+            {
+                if (parent == null)
+                {
+                    return true;
+                }
+                return (parent.Data < parent.Right.Data && parent.Data > parent.Left.Data);
+            }
+            if (node.Left != null)
+            {
+                isLeftBST = IsBstUtil(node.Left, node);
+            }
+
+            if (node.Right != null)
+            {
+                isRightBST = IsBstUtil(node.Right, node);
+            }
+
+            return isLeftBST && isRightBST;
         }
     }
 
